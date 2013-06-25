@@ -1,0 +1,11 @@
+#######################################
+#                                     #
+#   Example deployment configuration  #
+#                                     #
+#######################################
+
+server "someserver", :web, :db, :primary => true
+set :user, "username"
+set :password, "password"
+set :use_sudo, false 
+set :deploy_to, "/var/www"
