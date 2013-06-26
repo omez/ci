@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="CI Integration project" basedir="." default="check">
+<project name="CI Integration project" basedir="." default="generic">
 	
 	<description>Default CI build script</description>
 	
@@ -29,40 +29,16 @@
 	</target>	
 	
 	
-<!-- ******* TOP LEVEL TARGETS **************************************************************** -->
-	
-	<target name="prepare">
-		<echo message="Creating build directory" />
-		<mkdir dir="${dir.build}"/>
-	</target>
-	
-	<target name="make" description="Creates build of application" depends="check,clean,prepare">
-		<antcall target="-make-copy" />
-	</target>
-		
-	<target name="minify"></target>
-	
-	<target name="clean" description="Cleans build" depends="check">
-		<antcall target="-clean-prepare" />
-		<antcall target="-clean-emptify" />
-		<antcall target="-clean-finalize" />
-	</target>
-		
-	<target name="configure" description="Configures build to " depends="check">
-		<fail unless="env" message="Environment variable {env} is not set" />
-		<echo message="Configuring '${env}' environment" />
-		<antcall target="-configure" />
-	</target>
-
-
 <!-- ******* CUSTOM ENVIRONMENT TARGETS ******************************************************* -->
 	
-	<target name="development" depends="check,clean"><fail message="Development configuration required"/></target>
-	<target name="testing"><fail message="Testingt configuration required"/></target>
-	<target name="staging"><fail message="Staging configuration required"/></target>	
-	<target name="production"><fail message="Production configuration required"/></target>	
+	<target name="generic" depends="check,clean,prepare"><!-- PUT DEFAULT OPERATIONS HERE --></target>
 	
-<!-- ******* MINOR TARGETS ******************************************************************** -->
+	<target name="development" depends="generic"><fail message="Development configuration required"/></target>
+	<target name="testing" depends="generic"><fail message="Testing configuration required"/></target>
+	<target name="staging" depends="generic"><fail message="Staging configuration required"/></target>	
+	<target name="production" depends="generic"><fail message="Production configuration required"/></target>	
+	
+<!-- ******* ACTION TARGETS ******************************************************************* -->
 		
 			<!-- Make section BEGIN -->
 			<target name="-make-copy" description="Copy files"><fail message="Target not implemented yet"/></target>
@@ -73,31 +49,36 @@
 			<target name="-make-clean" description="Garbage collection"><fail message="Target not implemented yet"/></target>
 			<target name="-make-payload" description="Add payload for build such as database migrations, configs etc."><fail message="Target not implemented yet"/></target>
 			<!-- Make section END -->	
-	
-			<!-- Clean section BEGIN -->
-			<target name="-clean-prepare"><fail message="Target not implemented yet"/></target>
-	
-			<target name="-clean-emptify">
-				<echo message="Remove old build" />
-				<delete defaultexcludes="false" includeemptydirs="true" >
-					<fileset dir="${dir.build}">
-						<include name="**/*" />
-						<exclude name=".gitignore" />
-					</fileset>
-				</delete>
-			</target>
-	
-			<target name="-clean-finalize"><fail message="Target not implemented yet"/></target>
-			<!-- Clean section END -->
-	
 			
 			<!-- Configuration section BEGIN -->
 			<target name="-configure">
+				<fail unless="env" message="Environment variable {env} is not set" />
+				<echo message="Configuring '${env}' environment" />	
 				<echo message="Copy environmental scripts" />
 				<copy todir="${dir.build}/env" >
 					<fileset dir="${basedir}/envs/${env}" includes="*.php" />
 				</copy>
 			</target>
 			<!-- Configuration section END -->
+
+	
+	
+<!-- ******* SERVICE TARGETS, YOU DON'T NEED TO MODIFY THIS ************************************ -->
+	
+	<target name="prepare">
+		<echo message="Creating build directory" />
+		<mkdir dir="${dir.build}"/>
+	</target>
+		
+	<target name="clean" description="Cleans build" depends="check">
+		<echo message="Remove old build" />
+		<delete defaultexcludes="false" includeemptydirs="true" >
+			<fileset dir="${dir.build}">
+				<include name="**/*" />
+				<exclude name=".gitignore" />
+			</fileset>
+		</delete>
+	</target>	
+	
 	
 </project>
